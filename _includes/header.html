@@ -1,2 +1,11 @@
-<header>
+<header class="p-4 bg-white shadow">
+  <div class="container mx-auto flex justify-between items-center">
+    <a href="{{ "/" | relative_url }}" class="text-xl font-bold">
+      <img src="{{ "/assets/images/logo.png" | relative_url }}" alt="Logo" class="h-8">
+    </a>
+    <nav>
+      <a href="{{ "/about" | relative_url }}" class="px-3">About</a>
+      <a href="{{ "/contact" | relative_url }}" class="px-3">Contact</a>
+    </nav>
+  </div>
 </header>

@@ -1,13 +1,37 @@
-title: Your awesome title
-description: My awesome site
-permalink: /:slugified_categories/:title/
+title: "My G Site"
+description: "A Jekyll + Tailwind starter"
 
-date_format: "%b %-d, %Y"
+# Let GitHub set the correct baseurl + url dynamically
+url: "https://GilbertoTorres.github.io"
+baseurl: "/gfc-web-jekyll" # repo name (remove if using a custom domain)
 
+theme: jekyll-theme-primer
+
+# Markdown and permalink settings
+markdown: kramdown
+permalink: pretty
+
+# Exclude files and folders that should not be processed by Jekyll
 exclude:
-  - "package*.json"
-  - "*.config.js"
+  - node_modules
+  - vendor
+  - package.json
+  - package-lock.json
+  - webpack.config.js
+  - tailwind.config.js
+  - postcss.config.js
   - netlify.toml
   - README.md
   - LICENSE
-  - Makefile
+
+# Include built assets so they get copied to _site
+include:
+  - assets
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-feed
+
+# GitHub Pages metadata
+github:
+  is_project_page: true

@@ -1,29 +1,90 @@
-name: Deploy to GitHub Pages
+name: Build and Deploy Jekyll + Tailwind
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  pull-requests: write
+  deployments: write
 
 jobs:
-  build-and-deploy:
+  build:
+    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
-    env:
-      JEKYLL_ENV: production
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+
+      # 1. Build Tailwind/Webpack assets
+      - uses: actions/setup-node@v3
         with:
-          node-version: '14'
-          cache: npm
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7
-          bundler-cache: true
+          node-version: 18
       - run: npm install
       - run: npm run prod
-      - run: bundle exec jekyll build
-      - uses: peaceiris/actions-gh-pages@v3
+
+      # 2. Jekyll build (GitHub Pages-compatible)
+      - uses: actions/jekyll-build-pages@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
+          source: ./
+          destination: ./_site
+
+      # 3. Upload build output for deployment
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
+
+  deploy-preview:
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    environment:
+      name: preview
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy Preview to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Comment Preview URL
+        uses: mshick/add-pr-comment@v2
+        with:
+          message-id: preview-url
+          message: |
+            🚀 Preview build for **PR #${{ github.event.pull_request.number }}**  
+            📦 Commit: [`${{ github.sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
+
+            🔗 [View Preview](${{ steps.deployment.outputs.page_url }})
+
+  deploy-production:
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy Production to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  cleanup:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove Preview Comment
+        uses: mshick/add-pr-comment@v2
+        with:
+          message-id: preview-url
+          message: ""
+
+      - name: Expire Preview Deployment
+        uses: bobheadxi/deployments@v1
+        with:
+          step: deactivate-env
+          env: preview

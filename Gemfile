@@ -1,12 +1,7 @@
 source "https://rubygems.org"
 
-gem "jekyll", "~> 4.1"
+# Use the exact versions of Jekyll + plugins that GitHub Pages supports
+gem "github-pages", group: :jekyll_plugins
 
-group :jekyll_plugins do
-#   gem "jekyll-feed"
-  gem "jekyll-seo-tag"
-  gem "jekyll-sitemap"
-#   gem "jekyll-archives"
-#   gem "jekyll-redirect-from"
-  gem "jekyll-compose"
-end
+# Ensure bundler is installed
+gem "bundler"
