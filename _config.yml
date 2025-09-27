@@ -1,7 +1,9 @@
 title: "My G Site"
 description: "A Jekyll + Tailwind starter"
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://GilbertoTorres.github.io" # your GitHub Pages URL
+
+# Let GitHub set the correct baseurl + url dynamically
+url: "https://GilbertoTorres.github.io"
+baseurl: "/gfc-web-jekyll" # repo name (remove if using a custom domain)
 
 theme: jekyll-theme-primer
 
@@ -22,10 +24,14 @@ exclude:
   - README.md
   - LICENSE
 
-# Include (if you want Jekyll to copy these without processing)
+# Include built assets so they get copied to _site
 include:
   - assets
 
 plugins:
   - jekyll-seo-tag
   - jekyll-feed
+
+# GitHub Pages metadata
+github:
+  is_project_page: true

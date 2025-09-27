@@ -19,7 +19,7 @@ jobs:
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # 1. Build Tailwind/Webpack assets
       - uses: actions/setup-node@v3
@@ -57,7 +57,7 @@ jobs:
           message-id: preview-url
           message: |
             🚀 Preview build for **PR #${{ github.event.pull_request.number }}**  
-            📦 Commit: `${{ github.sha }}`  
+            📦 Commit: [`${{ github.sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
 
             🔗 [View Preview](${{ steps.deployment.outputs.page_url }})
 
