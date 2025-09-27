@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Build and Deploy Jekyll + Tailwind
 
 on:
   push:
@@ -6,23 +6,26 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    env:
-      JEKYLL_ENV: production
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+
+      # 1. Install Node for Tailwind/Webpack build
+      - uses: actions/setup-node@v3
         with:
-          node-version: '18'
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1'
-          bundler-cache: true
+          node-version: 18
+
       - run: npm install
-      - run: npm run prod
-      - run: bundle exec jekyll build
-      - uses: peaceiris/actions-gh-pages@v3
+      - run: npm run prod   # <-- runs Encore to generate CSS/JS
+
+      # 2. Run the official Jekyll build
+      - uses: actions/jekyll-build-pages@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
+          source: ./
+          destination: ./_site
+
+      # 3. Deploy to GitHub Pages
+      - uses: actions/deploy-pages@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
