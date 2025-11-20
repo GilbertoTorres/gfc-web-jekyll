@@ -19,7 +19,7 @@ jobs:
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # 1. Build Tailwind/Webpack assets
       - uses: actions/setup-node@v3
